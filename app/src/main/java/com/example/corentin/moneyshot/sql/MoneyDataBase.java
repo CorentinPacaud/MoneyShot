@@ -32,6 +32,7 @@ public class MoneyDataBase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(BankAccount.SQL_CREATE_ENTRIES);
+        db.execSQL(AccountOperation.SQL_CREATE_ENTRIES);
     }
 
     @Override
