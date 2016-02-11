@@ -21,6 +21,8 @@ import com.example.corentin.moneyshot.activities.MainActivity;
 import com.example.corentin.moneyshot.adapter.BankAccountAdapter;
 import com.example.corentin.moneyshot.model.AccountOperation;
 import com.example.corentin.moneyshot.model.BankAccount;
+import com.example.corentin.moneyshot.view.HeaderAccount;
+import com.github.mikephil.charting.charts.RadarChart;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +38,7 @@ public class AccountFragment extends Fragment {
     AppBarLayout appBarLayout;
     TextView mTextViewTendance;
     LinearLayoutManager mLayoutManager;
+    RadarChart mRadarChart;
 
     private FloatingActionButton mFabAdd;
 
@@ -79,6 +82,8 @@ public class AccountFragment extends Fragment {
         mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.my_recycler_view);
 
         mRecyclerView.setHasFixedSize(true);
+
+        mRecyclerView.addItemDecoration(new HeaderAccount(inflater.inflate(R.layout.header_account, null)));
 
         mImageView = (ImageView) mRootView.findViewById(R.id.backgroundImageView);
 
