@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ import com.example.corentin.moneyshot.model.AccountOperation;
  * A placeholder fragment containing a simple view.
  */
 public class OperationFragment extends Fragment {
+
+    private static final String TAG = OperationFragment.class.getSimpleName();
 
     public static final String EXTRA_ACCOUNT_ID = "extra_account_id";
 
@@ -47,6 +50,7 @@ public class OperationFragment extends Fragment {
         OperationFragment fragment = new OperationFragment();
         Bundle bundle = new Bundle();
         bundle.putLong(EXTRA_ACCOUNT_ID, accountId);
+        fragment.setArguments(bundle);
         return fragment;
     }
 
@@ -54,15 +58,14 @@ public class OperationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        if (savedInstanceState != null) {
-            mAccountId = savedInstanceState.getLong(EXTRA_ACCOUNT_ID);
+        if (getArguments() != null) {
+            mAccountId = getArguments().getLong(EXTRA_ACCOUNT_ID);
         }
 
         mRootView = inflater.inflate(R.layout.content_operation, container, false);
         Toolbar toolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,6 +127,7 @@ public class OperationFragment extends Fragment {
     }
 
     private void initUI() {
+        Log.d(TAG,"account id :"+ mAccountId);
         double count = AccountOperation.getAccountOperationCountFromAccountId(getContext(), mAccountId);
         mCollapsingToolbarLayout.setTitle("" + count + " €");
         if (count > 0) {

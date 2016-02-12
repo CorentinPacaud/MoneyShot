@@ -83,7 +83,7 @@ public class AccountFragment extends Fragment {
 
         mRecyclerView.setHasFixedSize(true);
 
-        mRecyclerView.addItemDecoration(new HeaderAccount(inflater.inflate(R.layout.header_account, null)));
+        mRecyclerView.addItemDecoration(new HeaderAccount(inflater.inflate(R.layout.header_account, null),null));
 
         mImageView = (ImageView) mRootView.findViewById(R.id.backgroundImageView);
 

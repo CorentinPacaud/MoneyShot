@@ -71,13 +71,13 @@ public class BankAccount {
     @Nullable
     public static BankAccount getAccount(Context context, long id) {
         Cursor c = MoneyDataBase.getInstance(context).getDb().query(TABLE_NAME, ALL_COLUMNS, ID + " = " + id, null, null, null, null);
-        if (c.getCount() > 0) {
-            Log.d(TABLE_NAME, "col:" + c.getColumnNames());
+        if (c.moveToFirst()) {
             return cursorToBankAccount(c);
         }
         return null;
     }
 
+    @Nullable
     private static BankAccount cursorToBankAccount(Cursor cursor) {
         BankAccount bankAccount = new BankAccount();
         bankAccount.setId(cursor.getLong(0));
@@ -86,6 +86,7 @@ public class BankAccount {
     }
 
     public static int removeAccount(Context context, long id) {
+        AccountOperation.removeAllOperationFromAccountId(context, id);
         return MoneyDataBase.getInstance(context).getDb().delete(TABLE_NAME, ID + " = " + id, null);
     }
 }

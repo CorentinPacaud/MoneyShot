@@ -1,8 +1,11 @@
 package com.example.corentin.moneyshot.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,8 @@ import java.util.ArrayList;
  * Created by Corentin on 22/09/2015.
  */
 public class BankAccountAdapter extends RecyclerView.Adapter<BankAccountAdapter.ViewHolder> {
+
+    private static final String TAG = BankAccountAdapter.class.getSimpleName();
 
     private ArrayList<BankAccount> mArray;
 
@@ -40,6 +45,7 @@ public class BankAccountAdapter extends RecyclerView.Adapter<BankAccountAdapter.
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final BankAccount bankAccount = mArray.get(position);
         holder.setText(bankAccount.getName());
+        Log.d(TAG,"account id :"+ bankAccount.getId());
         holder.textViewValue.setText("" + AccountOperation.getAccountOperationCountFromAccountId(holder.rootView.getContext(), bankAccount.getId()) + " €");
         holder.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,12 +71,26 @@ public class BankAccountAdapter extends RecyclerView.Adapter<BankAccountAdapter.
                 v.getContext().startActivity(OperationActivity.newIntent(v.getContext(), bankAccount.getId()));
             }
         });
-    }
+        holder.rootView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(holder.rootView.getContext());
 
-    private void addOperation(Context context, long accountId, String name, double value) {
-        AccountOperation.addOperation(context, accountId, name, value);
+                builder.setTitle("Opération");
+                builder.setMessage("Supprimer le compte");
+                builder.setIcon(R.drawable.ic_add_white_48dp);
+                builder.setPositiveButton("Supprimer", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteAccount(holder.rootView.getContext(),bankAccount);
+                    }
+                });
+                builder.setNegativeButton("Annuler", null);
+                builder.show();
+                return true;
+            }
+        });
     }
-
 
     @Override
     public int getItemCount() {
@@ -102,6 +122,12 @@ public class BankAccountAdapter extends RecyclerView.Adapter<BankAccountAdapter.
     public void remove(BankAccount bankAccount) {
         mArray.remove(bankAccount);
         notifyDataSetChanged();
+    }
+
+    private void deleteAccount(Context context,BankAccount bankAccount){
+        if(BankAccount.removeAccount(context,bankAccount.getId())>0){
+            remove(bankAccount);
+        }
     }
 
     public void addAll(ArrayList<BankAccount> list) {

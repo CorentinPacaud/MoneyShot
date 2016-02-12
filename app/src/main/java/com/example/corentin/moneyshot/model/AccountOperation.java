@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.corentin.moneyshot.sql.MoneyDataBase;
 
@@ -14,6 +15,7 @@ import java.util.ArrayList;
  */
 public class AccountOperation {
 
+    private static final String TAG = AccountOperation.class.getSimpleName();
 
     private static final String TYPE_TEXT = " TEXT";
     private static final String COMMA_SEP = ",";
@@ -146,5 +148,11 @@ public class AccountOperation {
 
     public static int removeOperation(Context context, long id) {
         return MoneyDataBase.getInstance(context).getDb().delete(TABLE_NAME, ID + " = " + id, null);
+    }
+
+    public static int removeAllOperationFromAccountId(Context context, long accountId) {
+        int count = MoneyDataBase.getInstance(context).getDb().delete(TABLE_NAME, ACCOUNT_ID + " = " + accountId, null);
+        Log.i(TAG, "Removed " + count + " operation from account " + accountId);
+        return count;
     }
 }
