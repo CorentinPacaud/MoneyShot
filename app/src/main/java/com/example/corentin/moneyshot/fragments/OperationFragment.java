@@ -24,6 +24,8 @@ import com.example.corentin.moneyshot.R;
 import com.example.corentin.moneyshot.adapter.OperationAdapter;
 import com.example.corentin.moneyshot.model.AccountOperation;
 
+import java.util.Date;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -143,7 +145,7 @@ public class OperationFragment extends Fragment {
     }
 
     private void addOperation(Context context, long accountId, String name, double value) {
-        mOperationAdapter.add(AccountOperation.addOperation(context, accountId, name, value));
+        mOperationAdapter.add(AccountOperation.addOperation(context, accountId, name, value, new Date().getTime()));
         mOperationAdapter.notifyDataSetChanged();
         initUI();
     }

@@ -50,24 +50,6 @@ public class BankAccountAdapter extends RecyclerView.Adapter<BankAccountAdapter.
         holder.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              /*  AlertDialog.Builder builder = new AlertDialog.Builder(holder.rootView.getContext());
-                View view = LayoutInflater.from(holder.rootView.getContext()).inflate(R.layout.alert_add_operation, null);
-                builder.setView(view);
-                final EditText editTextName = (EditText) view.findViewById(R.id.editTextAccountName);
-                final EditText editTextValue = (EditText) view.findViewById(R.id.editTextAccountValue);
-
-                builder.setTitle("Opération");
-                builder.setMessage("Ajouter une opératin");
-                builder.setIcon(R.drawable.ic_add_white_48dp);
-                builder.setPositiveButton("Ajouter", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        addOperation(holder.rootView.getContext(), bankAccount.getId(), editTextName.getText().toString(), Double.valueOf(editTextValue.getText().toString()));
-                        notifyDataSetChanged();
-                    }
-                });
-                builder.setNegativeButton("Annuler", null);
-                builder.show();*/
                 v.getContext().startActivity(OperationActivity.newIntent(v.getContext(), bankAccount.getId()));
             }
         });

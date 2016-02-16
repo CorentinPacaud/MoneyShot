@@ -1,25 +1,24 @@
 package com.example.corentin.moneyshot.view;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.example.corentin.moneyshot.R;
 import com.example.corentin.moneyshot.model.AccountOperation;
 import com.example.corentin.moneyshot.model.BankAccount;
-import com.example.corentin.moneyshot.sql.MoneyDataBase;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.RadarData;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by corentinpacaud on 11/02/2016.
@@ -27,7 +26,7 @@ import java.util.ArrayList;
 public class HeaderAccount extends RecyclerView.ItemDecoration {
 
     private View mView;
-    private LineChart mRadarChart;
+    private LineChart mLineChart;
     private BankAccount mBankAccount;
 
     /**
@@ -37,7 +36,7 @@ public class HeaderAccount extends RecyclerView.ItemDecoration {
     public HeaderAccount(View view, @Nullable BankAccount bankAccount) {
         mView = view;
         mBankAccount = bankAccount;
-        mRadarChart = (LineChart) mView.findViewById(R.id.chart);
+        mLineChart = (LineChart) mView.findViewById(R.id.chart);
 
     }
 
@@ -52,20 +51,36 @@ public class HeaderAccount extends RecyclerView.ItemDecoration {
             list = AccountOperation.getAllOperation(parent.getContext());
         }
         ArrayList<Entry> entries = new ArrayList<>();
+        ArrayList<String> xVals = new ArrayList<>();
         int count = list.size();
+        double total = 0;
         for (int i = 0; i < count; i++) {
-            entries.add(new Entry((float) list.get(i).getValue(), i));
+            total += list.get(i).getValue();
+            Date date = new Date(list.get(i).getCreatedAt());
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy hh:mm");
+            xVals.add(format.format(date));
+            entries.add(new Entry((float) total, i));
         }
-        ArrayList<String> labels = new ArrayList<String>();
-        labels.add("January");
-        labels.add("February");
-        labels.add("March");
-        LineDataSet dataset = new LineDataSet(entries, "test");
-        LineData data = new LineData();
+        LineDataSet dataset = new LineDataSet(entries, "Money");
+        dataset.setLineWidth(1.5f);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            dataset.setColor(parent.getContext().getResources().getColor(R.color.primary, null));
+        } else
+            dataset.setColor(parent.getContext().getResources().getColor(R.color.primary));
+
+        dataset.setDrawCircles(true);
+        dataset.setCircleColor(parent.getContext().getResources().getColor(R.color.primary_dark));
+        dataset.setDrawCircleHole(false);
+        LineData data = new LineData(xVals, dataset);
         dataset.setDrawCubic(true);
-        data.addDataSet(dataset);
-        mRadarChart.setData(data);
-        mRadarChart.setDescription(null);
+        mLineChart.setData(data);
+        mLineChart.setDescription(null);
+        mLineChart.setDragEnabled(true);
+        mLineChart.setScaleEnabled(true);
+        mLineChart.setPinchZoom(true);
+        mLineChart.setDoubleTapToZoomEnabled(true);
+        mLineChart.setAutoScaleMinMaxEnabled(true);
         mView.layout(parent.getLeft(), 0, parent.getRight(), mView.getMeasuredHeight());
         mView.draw(c);
         c.restore();
@@ -80,5 +95,9 @@ public class HeaderAccount extends RecyclerView.ItemDecoration {
             }
             outRect.set(0, mView.getMeasuredHeight(), 0, 0);
         } else outRect.setEmpty();
+    }
+
+    public LineChart getLineChart() {
+        return mLineChart;
     }
 }

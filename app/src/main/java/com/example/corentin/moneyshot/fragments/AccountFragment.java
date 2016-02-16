@@ -41,6 +41,7 @@ public class AccountFragment extends Fragment {
     RadarChart mRadarChart;
 
     private FloatingActionButton mFabAdd;
+    private HeaderAccount mHeaderAccount;
 
 
     public AccountFragment() {
@@ -83,7 +84,8 @@ public class AccountFragment extends Fragment {
 
         mRecyclerView.setHasFixedSize(true);
 
-        mRecyclerView.addItemDecoration(new HeaderAccount(inflater.inflate(R.layout.header_account, null),null));
+        mHeaderAccount = new HeaderAccount(inflater.inflate(R.layout.header_account, null), null);
+        mRecyclerView.addItemDecoration(mHeaderAccount);
 
         mImageView = (ImageView) mRootView.findViewById(R.id.backgroundImageView);
 

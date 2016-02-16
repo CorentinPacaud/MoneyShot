@@ -26,7 +26,8 @@ public class AccountOperation {
             AccountOperation.ID + " INTEGER PRIMARY KEY" + COMMA_SEP +
             AccountOperation.ACCOUNT_ID + TYPE_LONG + COMMA_SEP +
             AccountOperation.NAME + TYPE_TEXT + COMMA_SEP +
-            AccountOperation.VALUE + TYPE_DOUBLE +
+            AccountOperation.VALUE + TYPE_DOUBLE + COMMA_SEP +
+            AccountOperation.CREATED_AT + TYPE_LONG +
             " )";
 
 
@@ -35,15 +36,17 @@ public class AccountOperation {
     private static final String ACCOUNT_ID = "accountId";
     private static final String NAME = "name";
     private static final String VALUE = "value";
+    private static final String CREATED_AT = "createdAt";
 
     public static final String DROP_TABLE = "DROP TABLE " + TABLE_NAME;
 
-    private static final String[] ALL_COLUMNS = new String[]{ID, ACCOUNT_ID, NAME, VALUE};
+    private static final String[] ALL_COLUMNS = new String[]{ID, ACCOUNT_ID, NAME, VALUE, CREATED_AT};
 
     private long id;
     private String name;
     private double value;
     private long accountId;
+    private long mCreatedAt;
 
     public long getId() {
         return id;
@@ -77,17 +80,26 @@ public class AccountOperation {
         this.accountId = accountId;
     }
 
-    public static AccountOperation addOperation(Context context, long accountId, String name, double value) {
+    public long getCreatedAt() {
+        return mCreatedAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        mCreatedAt = createdAt;
+    }
+
+    public static AccountOperation addOperation(Context context, long accountId, String name, double value, long createdAt) {
         ContentValues values = new ContentValues();
         values.put(ACCOUNT_ID, accountId);
         values.put(NAME, name);
         values.put(VALUE, value);
+        values.put(CREATED_AT, createdAt);
         long id = MoneyDataBase.getInstance(context).getDb().insert(TABLE_NAME, null, values);
         return getAccountOperation(context, id);
     }
 
     public static ArrayList<AccountOperation> getAllOperation(Context context) {
-        Cursor cursor = MoneyDataBase.getInstance(context).getDb().query(TABLE_NAME, ALL_COLUMNS, null, null, null, null, null);
+        Cursor cursor = MoneyDataBase.getInstance(context).getDb().query(true,TABLE_NAME, ALL_COLUMNS, null, null, null, null, null,null);
         ArrayList<AccountOperation> list = new ArrayList<>();
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -139,10 +151,11 @@ public class AccountOperation {
 
     private static AccountOperation cursorToBankAccount(Cursor cursor) {
         AccountOperation bankAccount = new AccountOperation();
-        bankAccount.setId(cursor.getLong(0));
-        bankAccount.setAccountId(cursor.getLong(1));
-        bankAccount.setName(cursor.getString(2));
-        bankAccount.setValue(cursor.getDouble(3));
+        bankAccount.setId(cursor.getLong(cursor.getColumnIndex(ID)));
+        bankAccount.setAccountId(cursor.getLong(cursor.getColumnIndex(ACCOUNT_ID)));
+        bankAccount.setName(cursor.getString(cursor.getColumnIndex(NAME)));
+        bankAccount.setValue(cursor.getDouble(cursor.getColumnIndex(VALUE)));
+        bankAccount.setCreatedAt(cursor.getLong(cursor.getColumnIndex(CREATED_AT)));
         return bankAccount;
     }
 
