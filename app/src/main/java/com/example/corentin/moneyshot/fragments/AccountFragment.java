@@ -1,17 +1,25 @@
 package com.example.corentin.moneyshot.fragments;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,6 +47,10 @@ public class AccountFragment extends Fragment {
     TextView mTextViewTendance;
     LinearLayoutManager mLayoutManager;
     RadarChart mRadarChart;
+
+    FloatingActionButton mFabSubmitAccountName;
+    CardView mViewAddAccount;
+    EditText mEditTextAccountName;
 
     private FloatingActionButton mFabAdd;
     private HeaderAccount mHeaderAccount;
@@ -82,6 +94,10 @@ public class AccountFragment extends Fragment {
 
         mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.my_recycler_view);
 
+        mViewAddAccount = (CardView) mRootView.findViewById(R.id.viewAddAccount);
+        mEditTextAccountName = (EditText) mRootView.findViewById(R.id.editAddAccount);
+        mFabSubmitAccountName = (FloatingActionButton) mRootView.findViewById(R.id.fabSubmit);
+
         mRecyclerView.setHasFixedSize(true);
 
         mHeaderAccount = new HeaderAccount(inflater.inflate(R.layout.header_account, null), null);
@@ -107,13 +123,90 @@ public class AccountFragment extends Fragment {
                 displayAddScreen();
             }
         });
+        mFabSubmitAccountName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mEditTextAccountName.getText().toString().length() > 0)
+                    addAccount(mEditTextAccountName.getText().toString());
+                animateFabIn();
+                Animator animator1 = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    animator1 = ViewAnimationUtils.createCircularReveal(mViewAddAccount, mViewAddAccount.getWidth() - mFabSubmitAccountName.getWidth() / 2, mFabSubmitAccountName.getHeight() / 2, mViewAddAccount.getWidth(), 0);
+                    animator1.setDuration(300);
+                    animator1.setInterpolator(new AccelerateInterpolator(1f));
+                    animator1.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
 
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mViewAddAccount.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    });
+                    animator1.start();
+                }
+            }
+        });
+
+        mEditTextAccountName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (start == 0 && after > 0) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mFabSubmitAccountName.setImageDrawable(getResources().getDrawable(R.drawable.ic_done_white_48dp, null));
+                    }
+                }
+                if (start > 0 && after == 0) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mFabSubmitAccountName.setImageDrawable(getResources().getDrawable(R.drawable.ic_clear_white_48dp, null));
+                    }
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         return mRootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mBankAccountAdapter.notifyDataSetChanged();
+        animateFabIn();
+    }
+
+    private void animateFabIn() {
+        mFabAdd.setVisibility(View.INVISIBLE);
+        AnimatorSet animator = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.fab_in_scale);
+        animator.setTarget(mFabAdd);
+        mFabAdd.setVisibility(View.VISIBLE);
+        animator.start();
+    }
+
+
     private void displayAddScreen() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        /*AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View view = LayoutInflater.from(getContext()).inflate(R.layout.alert_add_account, null);
         builder.setView(view);
         final EditText editTextName = (EditText) view.findViewById(R.id.editTextAccountName);
@@ -128,7 +221,66 @@ public class AccountFragment extends Fragment {
             }
         });
         builder.setNegativeButton("Annuler", null);
-        builder.show();
+        builder.show();*/
+
+        mFabAdd.setVisibility(View.GONE);
+
+        mFabSubmitAccountName.setVisibility(View.INVISIBLE);
+        mViewAddAccount.setVisibility(View.VISIBLE);
+        mViewAddAccount.requestLayout();
+        mFabSubmitAccountName.requestLayout();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Animator animator1 = ViewAnimationUtils.createCircularReveal(mViewAddAccount, mViewAddAccount.getWidth() - mFabSubmitAccountName.getWidth() / 2, mFabSubmitAccountName.getHeight() / 2, 0, mViewAddAccount.getWidth());
+            animator1.setDuration(300);
+            animator1.setInterpolator(new AccelerateInterpolator(1f));
+            animator1.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    AnimatorSet animator = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.fab_in_scale);
+                    animator.setStartDelay(500);
+                    animator.setTarget(mFabSubmitAccountName);
+                    animator.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            mFabSubmitAccountName.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    });
+                    animator.start();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            animator1.start();
+        }
     }
 
     private void addAccount(String name) {
