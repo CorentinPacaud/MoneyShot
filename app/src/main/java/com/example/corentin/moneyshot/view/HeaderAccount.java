@@ -83,7 +83,7 @@ public class HeaderAccount extends RecyclerView.ItemDecoration {
         mLineChart.setAutoScaleMinMaxEnabled(true);
         mView.layout(parent.getLeft(), 0, parent.getRight(), mView.getMeasuredHeight());
         mView.draw(c);
-        c.restore();
+        c.save();
     }
 
     @Override

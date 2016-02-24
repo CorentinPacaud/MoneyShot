@@ -97,6 +97,7 @@ public class AccountFragment extends Fragment {
         mViewAddAccount = (CardView) mRootView.findViewById(R.id.viewAddAccount);
         mEditTextAccountName = (EditText) mRootView.findViewById(R.id.editAddAccount);
         mFabSubmitAccountName = (FloatingActionButton) mRootView.findViewById(R.id.fabSubmit);
+        mViewAddAccount.setVisibility(View.INVISIBLE);
 
         mRecyclerView.setHasFixedSize(true);
 
@@ -126,9 +127,12 @@ public class AccountFragment extends Fragment {
         mFabSubmitAccountName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mEditTextAccountName.getText().toString().length() > 0)
+                if (mEditTextAccountName.getText().toString().length() > 0) {
                     addAccount(mEditTextAccountName.getText().toString());
+                    mEditTextAccountName.setText("");
+                }
                 animateFabIn();
+
                 Animator animator1 = null;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                     animator1 = ViewAnimationUtils.createCircularReveal(mViewAddAccount, mViewAddAccount.getWidth() - mFabSubmitAccountName.getWidth() / 2, mFabSubmitAccountName.getHeight() / 2, mViewAddAccount.getWidth(), 0);
@@ -168,7 +172,7 @@ public class AccountFragment extends Fragment {
                         mFabSubmitAccountName.setImageDrawable(getResources().getDrawable(R.drawable.ic_done_white_48dp, null));
                     }
                 }
-                if (start > 0 && after == 0) {
+                if (after == 0) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         mFabSubmitAccountName.setImageDrawable(getResources().getDrawable(R.drawable.ic_clear_white_48dp, null));
                     }
@@ -226,8 +230,6 @@ public class AccountFragment extends Fragment {
         mFabAdd.setVisibility(View.GONE);
 
         mFabSubmitAccountName.setVisibility(View.INVISIBLE);
-        mViewAddAccount.setVisibility(View.VISIBLE);
-        mViewAddAccount.requestLayout();
         mFabSubmitAccountName.requestLayout();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -237,13 +239,12 @@ public class AccountFragment extends Fragment {
             animator1.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-
+                    mViewAddAccount.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     AnimatorSet animator = (AnimatorSet) AnimatorInflater.loadAnimator(getContext(), R.animator.fab_in_scale);
-                    animator.setStartDelay(500);
                     animator.setTarget(mFabSubmitAccountName);
                     animator.addListener(new Animator.AnimatorListener() {
                         @Override

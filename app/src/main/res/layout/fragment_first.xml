@@ -102,11 +102,11 @@
         android:layout_height="56dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:visibility="invisible"
         android:layout_alignTop="@id/fabAdd"
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:visibility="gone"
         app:cardBackgroundColor="@color/accent"
         app:cardCornerRadius="30dp">
 
@@ -120,6 +120,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_marginLeft="16dp"
+                android:lines="1"
                 android:layout_marginRight="16dp"
                 android:hint="Nom du compte"/>
 
